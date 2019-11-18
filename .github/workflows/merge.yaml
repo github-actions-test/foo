@@ -19,7 +19,9 @@ jobs:
         run: |
           set -eEuo pipefail
           set -x
-          cd actions
+          pwd
+          ls
+          cd foo/actions
           git submodule init foo
           git submodule update foo
           (cd foo && git fetch -a && git checkout $GITHUB_REF)
