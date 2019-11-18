@@ -1,24 +1,28 @@
 name: Merge Foo PR
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [closed]
 jobs:
   build:
     name: Merge
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Meta Repository
+        uses: actions/checkout@v1
+        if: github.action == 'closed' && github.pull_request.merged == 'true'
         with:
           repository: github-actions-test/actions
           ref: master
-      - run: |
+          
+      - name: Update Ref to ${{ github.repository }}
+        if: github.action == 'closed' && github.pull_request.merged == 'true'
+        run: |
           set -eEuo pipefail
           set -x
-          readonly repo=$(echo $GITHUB_REPOSITORY | cut -d/ -f2)
-          git submodule init $repo
-          git submodule update $repo
-          (cd $repo && git fetch -a && git checkout $GITHUB_REF)
-          git add $repo
-          git commit -m'Update $repo'
+          git submodule init foo
+          git submodule update foo
+          (cd foo && git fetch -a && git checkout $GITHUB_REF)
+          git add foo
+          git commit -m'Update foo'
           git push
           
