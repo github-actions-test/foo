@@ -21,7 +21,7 @@ jobs:
           set -x
           pwd
           ls
-          cd foo/actions
+          cd ../actions
           git submodule init foo
           git submodule update foo
           (cd foo && git fetch -a && git checkout $GITHUB_REF)
