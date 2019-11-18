@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Checkout Meta Repository
         uses: actions/checkout@v1
-        if: github.action == 'closed' && github.pull_request.merged == 'true'
+        if: github.pull_request.merged == 'true'
         with:
           repository: github-actions-test/actions
           ref: master
           
       - name: Update Ref to ${{ github.repository }}
-        if: github.action == 'closed' && github.pull_request.merged == 'true'
+        if: github.pull_request.merged == 'true'
         run: |
           set -eEuo pipefail
           set -x
