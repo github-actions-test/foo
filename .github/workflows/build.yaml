@@ -7,7 +7,14 @@ jobs:
     name: Build foo
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: github-actions-test/cmake-build-action@master
+      - name: Checkout Source
+        uses: actions/checkout@v1
+        
+      - name: Build
+        uses: github-actions-test/cmake-build-action@master
+        id: build
+        
+      - name: Cache Artifacts
+        uses: actions/cache@v1
         with:
-          uploadUrlPattern: 'http://35.228.224.98/upload?token=29c0640d89c6f3ecd256'
+          path: ${{ outputs.build.artifacts }}
