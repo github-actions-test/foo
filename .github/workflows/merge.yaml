@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout Meta Repository
         uses: actions/checkout@v1
-        if: github.pull_request.merged == 'true'
+        if: github.pull_request.merged == true
         with:
           repository: github-actions-test/actions
           ref: master
