@@ -15,7 +15,7 @@ jobs:
           ref: master
           
       - name: Update Ref to ${{ github.repository }}
-        if: github.pull_request.merged == 'true'
+        if: github.event.pull_request.merged == 'true'
         run: |
           set -eEuo pipefail
           set -x
