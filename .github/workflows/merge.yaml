@@ -1,0 +1,24 @@
+name: Merge Foo PR
+on:
+  pull_request_review:
+    types: [submitted]
+jobs:
+  build:
+    name: Merge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          repository: github-actions-test/actions
+          ref: master
+      - run: |
+          set -eEuo pipefail
+          set -x
+          readonly repo=$(echo $GITHUB_REPOSITORY | cut -d/ -f2)
+          git submodule init $repo
+          git submodule update $repo
+          (cd $repo && git fetch -a && git checkout $GITHUB_REF)
+          git add $repo
+          git commit -m'Update $repo'
+          git push
+          
