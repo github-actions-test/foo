@@ -17,4 +17,4 @@ jobs:
       - name: Cache Artifacts
         uses: actions/cache@v1
         with:
-          path: ${{ outputs.build.artifacts }}
+          path: ${{ steps.build.outputs.artifacts }}
