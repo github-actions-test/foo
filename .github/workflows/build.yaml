@@ -11,6 +11,8 @@ jobs:
         run: |
           echo sha=${{ github.sha }}
           echo ref=${{ github.ref }}
+          echo head_ref=${{ github.head_ref }}
+          echo base_ref=${{ github.base_ref }}
           
       - name: Checkout Source
         uses: actions/checkout@v1
