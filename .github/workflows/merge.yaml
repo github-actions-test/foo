@@ -28,9 +28,10 @@ jobs:
           cd ../actions
           git config --global user.email 'actions@github.com'
           git config --global user.name 'GitHub Actions'
+          git checkout master
           git submodule init foo
           git submodule update foo
-          (cd foo && git fetch -a && git reset --hard $GITHUB_REF)
+          (cd foo && git fetch -a && git reset --hard $GITHUB_SHA)
           git add foo
           git commit -m'Update foo'
           git push
