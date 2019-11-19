@@ -27,12 +27,22 @@ jobs:
           set -eEuo pipefail
           set -x
           export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+          # Check out the meta repository so that we can make changes in it based on this pull request merge
           cd actions
           git config --global user.email 'actions@github.com'
           git config --global user.name 'GitHub Actions'
           git submodule init foo
           git submodule update foo
           (cd foo && git fetch -a && git checkout master)
+
+          # Promote the uploaded pull request binary to represent master
+          (cd foo \
+              && git log -1 --pretty=%B | sed -E 's/.+#([0-9]+).+/\1/g' \
+                  | xargs -I N curl --fail -s -o foo-master.tar.gz http://35.228.224.98/files/foo-pr-N.tar.gz?token=29c0640d89c6f3ecd256 \
+              && curl --fail -s -Ffile=foo-master.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256)
+
+          # Update the meta repository with the current foo master
           git add foo
           git commit -m'Update foo'
           git push
