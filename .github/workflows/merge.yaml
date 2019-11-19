@@ -13,6 +13,11 @@ jobs:
         with:
           repository: github-actions-test/actions
           ref: master
+
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@0.1.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           
       - name: Update Ref to ${{ github.repository }}
         if: github.event.pull_request.merged == true
