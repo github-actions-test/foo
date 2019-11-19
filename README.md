@@ -10,3 +10,4 @@ olle
 reidar
 sten-sune
 bengt-oskar
+stig-sten
