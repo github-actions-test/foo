@@ -32,7 +32,7 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git submodule init foo
           git submodule update foo
-          (cd foo && git fetch -a && git reset --hard $GITHUB_SHA)
+          (cd foo && git fetch -a && git checkout master)
           git add foo
           git commit -m'Update foo'
           git push
