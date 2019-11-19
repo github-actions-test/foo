@@ -15,7 +15,7 @@ jobs:
           ref: master
 
       - name: Start SSH Agent
-        uses: webfactory/ssh-agent@0.1.1
+        uses: webfactory/ssh-agent@master
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           
