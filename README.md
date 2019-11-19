@@ -8,3 +8,4 @@ korv
 bulle
 olle
 reidar
+sten-sune
