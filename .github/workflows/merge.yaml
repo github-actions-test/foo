@@ -7,17 +7,19 @@ jobs:
     name: Merge
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Meta Repository
-        uses: actions/checkout@v1
-        if: github.event.pull_request.merged == true
-        with:
-          repository: github-actions-test/actions
-          ref: master
-
       - name: Start SSH Agent
+        if: github.event.pull_request.merged == true        
         uses: webfactory/ssh-agent@master
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Checkout Meta Repository
+        if: github.event.pull_request.merged == true
+        run: |
+          set -eEuo pipefail
+          set -x
+          export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+          git clone git@github.com:github-actions-test/actions.git
           
       - name: Update Ref to ${{ github.repository }}
         if: github.event.pull_request.merged == true
@@ -25,10 +27,9 @@ jobs:
           set -eEuo pipefail
           set -x
           export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-          cd ../actions
+          cd actions
           git config --global user.email 'actions@github.com'
           git config --global user.name 'GitHub Actions'
-          git checkout master
           git submodule init foo
           git submodule update foo
           (cd foo && git fetch -a && git reset --hard $GITHUB_SHA)
