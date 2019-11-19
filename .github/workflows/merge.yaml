@@ -44,6 +44,7 @@ jobs:
           curl --fail -s -F file=@foo-master.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
 
           # Update the meta repository with the current foo master
+          cd ..
           git add foo
           git commit -m'Update foo'
           git push
