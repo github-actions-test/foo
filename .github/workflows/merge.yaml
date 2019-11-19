@@ -18,10 +18,7 @@ jobs:
         if: github.event.pull_request.merged == true
         run: |
           set -eEuo pipefail
-          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-          set -x
-          pwd
-          ls
+          export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
           cd ../actions
           git submodule init foo
           git submodule update foo
