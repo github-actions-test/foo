@@ -16,6 +16,13 @@ jobs:
         uses: actions/checkout@v1
         with:
           ref: ${{ github.sha }}
+
+      - name: Squash Source
+        id: squash
+        run: |
+          git checkout master
+          git merge --squash ${{ github.sha }}
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
         
       - name: Build
         uses: github-actions-test/cmake-build-action@master
@@ -23,5 +30,7 @@ jobs:
         
       - name: Upload artifacts
         run: |
-          tar -ca -C ${{steps.build.outputs.artifacts}} -f ${{github.sha}}.tar.gz .
-          curl -Ffile=@${{github.sha}}.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
+          export dir=${{steps.build.outputs.artifacts}}
+          export sha=${{steps.squash.outputs.sha}}
+          tar -ca -C ${dir} -f ${sha}.tar.gz .
+          curl -Ffile=@${sha}.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
