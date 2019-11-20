@@ -7,14 +7,6 @@ jobs:
     name: Build foo
     runs-on: ubuntu-latest
     steps:
-      - name: Print Stuff
-        run: |
-          set -eEuo pipefail          
-          echo sha=${{ github.sha }}
-          echo ref=${{ github.ref }}
-          echo head_ref=${{ github.head_ref }}
-          echo base_ref=${{ github.base_ref }}
-          
       - name: Checkout Source
         uses: actions/checkout@v1
         
@@ -30,6 +22,6 @@ jobs:
       - name: Upload artifacts
         run: |
           export dir=build/install
-          export file=foo-pr-$(echo ${{ github.base_ref }} | cut -d/ -f3).tar.gz
+          export file=foo-pr-$(echo ${{ github.head_ref }} | cut -d/ -f3).tar.gz
           tar -ca -C ${dir} -f ${file} .
           curl -Ffile=@${file} http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
