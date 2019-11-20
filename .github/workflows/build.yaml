@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Print Stuff
         run: |
+          set -eEuo pipefail          
           echo sha=${{ github.sha }}
           echo ref=${{ github.ref }}
           echo head_ref=${{ github.head_ref }}
@@ -18,12 +19,17 @@ jobs:
         uses: actions/checkout@v1
         
       - name: Build
-        uses: github-actions-test/cmake-build-action@master
-        id: build
+        run: |
+          set -eEuo pipefail
+          mkdir build
+          cd build
+          cmake -DCMAKE_INSTALL_PREFIX=install ..
+          make
+          make install
         
       - name: Upload artifacts
         run: |
-          export dir=${{steps.build.outputs.artifacts}}          
+          export dir=build/install
           export pr=$(echo ${{ github.ref }} | cut -d/ -f3)
           export file=foo-pr-${pr}.tar.gz
           tar -ca -C ${dir} -f ${file} .
