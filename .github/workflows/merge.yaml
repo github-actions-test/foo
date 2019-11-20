@@ -38,14 +38,14 @@ jobs:
           git fetch -a
           git checkout master
 
-          # Promote the uploaded pull request binary to represent master
-          export pr=$(git log -1 --pretty=%B | sed -E 's/.+#([0-9]+).+/\1/g')
-          curl --fail -s -o foo-master.tar.gz       http://35.228.224.98/files/foo-pr-${pr}.tar.gz?token=29c0640d89c6f3ecd256
-          curl --fail -s -F file=@foo-master.tar.gz http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
+          # Construct the commit message so that the meta repo will be able to find the artifacts from this
+          # build
+          readonly pr=$(git log -1 --pretty=%B | sed -E 's/.+#([0-9]+).+/\1/g')
+          readonly msg="Update foo: http://35.228.224.98/files/foo-pr-${pr}.tar.gz?token=29c0640d89c6f3ecd256"
 
           # Update the meta repository with the current foo master
           cd ..
           git add foo
-          git commit -m'Update foo'
+          git commit -m"${msg}"
           git push
           
