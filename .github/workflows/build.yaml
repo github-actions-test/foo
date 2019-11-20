@@ -7,6 +7,15 @@ jobs:
     name: Build foo
     runs-on: ubuntu-latest
     steps:
+      - name: Gather Intelligence
+        id: info
+        run: |
+          set -eEuo pipefail
+          echo ${{ github.repository }} | while IFS='/' read -r owner repository; do
+              echo "::set-output name=owner::${owner}"
+              echo "::set-output name=repository::${repository}"
+          done
+      
       - name: Checkout Source
         uses: actions/checkout@v1
         
@@ -18,10 +27,14 @@ jobs:
           cmake -DCMAKE_INSTALL_PREFIX=install ..
           make
           make install
-        
+
       - name: Upload artifacts
         run: |
-          export dir=build/install
-          export file=foo-pr-$(echo ${{ github.head_ref }} | cut -d/ -f3).tar.gz
+          set -eEuo pipefail
+          readonly dir=build/install
+          readonly repo=${{ steps.info.outputs.repository }}
+          readonly branch=$(echo ${{ github.head_ref }} | cut -d/ -f3)
+          readonly file=${repo}-pr-${branch}.tar.gz
           tar -ca -C ${dir} -f ${file} .
           curl -Ffile=@${file} http://35.228.224.98/upload?token=29c0640d89c6f3ecd256
+

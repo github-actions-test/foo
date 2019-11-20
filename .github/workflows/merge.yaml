@@ -7,45 +7,55 @@ jobs:
     name: Merge
     runs-on: ubuntu-latest
     steps:
+      - name: Gather Intelligence
+        id: info
+        run: |
+          set -eEuo pipefail
+          echo ${{ github.repository }} | while IFS='/' read -r owner repository; do
+              echo "::set-output name=owner::${owner}"
+              echo "::set-output name=repository::${repository}"
+          done
+      
       - name: Start SSH Agent
         if: github.event.pull_request.merged == true        
         uses: webfactory/ssh-agent@master
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      
+
       - name: Checkout Meta Repository
         if: github.event.pull_request.merged == true
         run: |
           set -eEuo pipefail
-          set -x
           export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-          git clone git@github.com:github-actions-test/actions.git
-          
+          readonly url=git@github.com:${{ steps.info.outputs.owner }}/actions.git
+          git clone "${url}"
+
       - name: Update Ref to ${{ github.repository }}
         if: github.event.pull_request.merged == true
         run: |
           set -eEuo pipefail
-          set -x
           export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
+          readonly repo=${{ steps.info.outputs.repository }}
+          
           # Check out the meta repository so that we can make changes in it based on this pull request merge
           cd actions
           git config --global user.email 'actions@github.com'
           git config --global user.name 'GitHub Actions'
-          git submodule init foo
-          git submodule update foo
-          cd foo
+          git submodule init ${repo}
+          git submodule update ${repo}
+          cd ${repo}
           git fetch -a
           git checkout master
 
           # Construct the commit message so that the meta repo will be able to find the artifacts from this
           # build
           readonly branch=$(echo ${{ github.head_ref }} | cut -d/ -f3)
-          readonly msg="Update foo http://35.228.224.98/files/foo-pr-${branch}.tar.gz?token=29c0640d89c6f3ecd256"
+          readonly file=${repo}-pr-${branch}.tar.gz
+          readonly msg="Update ${repo} http://35.228.224.98/files/${file}?token=29c0640d89c6f3ecd256"
 
-          # Update the meta repository with the current foo master
+          # Update the meta repository with the current bar master
           cd ..
-          git add foo
+          git add ${repo}
           git commit -m"${msg}"
           git push
-          
